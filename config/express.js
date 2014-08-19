@@ -19,7 +19,7 @@ var express = require('express'),
 	config = require('./config'),
 	consolidate = require('consolidate'),
 	path = require('path'),
-	redirectToHttps = require('./redirectToHttps');;
+	redirectToHttps = require('./redirectToHttps');
 
 module.exports = function(db) {
 	// Initialize express app
