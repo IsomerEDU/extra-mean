@@ -19,7 +19,7 @@ var express = require('express'),
 	config = require('./config'),
 	consolidate = require('consolidate'),
 	path = require('path'),
-    redirectToHttps = require('./redirectToHttps');
+	redirectToHttps = require('./redirectToHttps');;
 
 module.exports = function(db) {
 	// Initialize express app
@@ -40,7 +40,7 @@ module.exports = function(db) {
 
 	// Passing the request url to environment locals
 	app.use(function(req, res, next) {
-		res.locals.url = req.protocol + ':// ' + req.headers.host + req.url;
+		res.locals.url = req.protocol + '://' + req.headers.host + req.url;
 		next();
 	});
 
@@ -74,7 +74,9 @@ module.exports = function(db) {
 	}
 
 	// Request body parsing middleware should be above methodOverride
-	app.use(bodyParser.urlencoded());
+	app.use(bodyParser.urlencoded({
+		extended: true
+	}));
 	app.use(bodyParser.json());
 	app.use(methodOverride());
 
@@ -86,6 +88,8 @@ module.exports = function(db) {
 
 	// Express MongoDB session storage
 	app.use(session({
+		saveUninitialized: true,
+		resave: true,
 		secret: config.sessionSecret,
 		store: new mongoStore({
 			db: db.connection.db,
@@ -100,16 +104,16 @@ module.exports = function(db) {
 	// connect flash for flash messages
 	app.use(flash());
 
-    // Specify https port for redirectToHttps module
-    redirectToHttps.options.httpsPort = config.httpsPort;
+    	// Specify https port for redirectToHttps module
+    	redirectToHttps.options.httpsPort = config.httpsPort;
 
-    // Use requireHttps to redirect insecure requests
-    app.use(redirectToHttps.redirectToHttpsMiddleware);
+    	// Use requireHttps to redirect insecure requests
+    	app.use(redirectToHttps.redirectToHttpsMiddleware);
 
 	// Use helmet to secure Express headers
 	app.use(helmet.xframe());
-	app.use(helmet.iexss());
-	app.use(helmet.contentTypeOptions());
+	app.use(helmet.xssFilter());
+	app.use(helmet.nosniff());
 	app.use(helmet.ienoopen());
 	app.disable('x-powered-by');
 
