@@ -3,6 +3,16 @@
 [![Build Status](https://travis-ci.org/meanjs/mean.svg?branch=master)](https://travis-ci.org/meanjs/mean)
 [![Dependencies Status](https://david-dm.org/meanjs/mean.svg)](https://david-dm.org/meanjs/mean)
 
+## Setting up SSL on MEANJS
+* Visit [this page](http://www.akadia.com/services/ssh_test_certificate.html) for an explanation of how to sign a cert
+* Add certs to `config/certs` directory
+* See [this question](https://stackoverflow.com/questions/5998694/how-to-create-an-https-server-in-node-js) to understand how to add an https server to our stack (note: this means you do not use app.listen anywhere
+* Add a field for the https port in [config.js](config/config.js)
+* Add certificate info (see [this question](https://stackoverflow.com/questions/5998694/how-to-create-an-https-server-in-node-js)) to server
+* Make the http server listen to the regular port, and make the secure server listen to the secure port [example](server.js)
+* Add redirecting middleware to your app
+
+
 MEAN.JS is a full-stack JavaScript open-source solution, which provides a solid starting point for [MongoDB](http://www.mongodb.org/), [Node.js](http://www.nodejs.org/), [Express](http://expressjs.com/), and [AngularJS](http://angularjs.org/) based applications. The idea is to solve the common issues with connecting those frameworks, build a robust framework to support daily development needs, and help developers use better practices while working with popular JavaScript components. 
 
 ## Before You Begin 
@@ -76,29 +86,6 @@ Your application should run on the 3000 port so in your browser just go to [http
                             
 That's it! your application should be running by now, to proceed with your development check the other sections in this documentation. 
 If you encounter any problem try the Troubleshooting section.
-
-## Development and deployment With Docker
-
-* Install [Docker](http://www.docker.com/)
-* Install [Fig](https://github.com/orchardup/fig)
-
-* Local development and testing with fig: 
-```bash
-$ fig up
-```
-
-* Local development and testing with just Docker:
-```bash
-$ docker build -t mean .
-$ docker run -p 27017:27017 -d --name db mongo
-$ docker run -p 3000:3000 --link db:db_1 mean
-$
-```
-
-* To enable live reload forward 35729 port and mount /app and /public as volumes:
-```bash
-$ docker run -p 3000:3000 -p 35729:35729 -v /Users/mdl/workspace/mean-stack/mean/public:/home/mean/public -v /Users/mdl/workspa/mean-stack/mean/app:/home/mean/app --link db:db_1 mean
-```
 
 ## Getting Started With MEAN.JS
 You have your application running but there are a lot of stuff to understand, we recommend you'll go over the [Offical Documentation](http://meanjs.org/docs.html). 
