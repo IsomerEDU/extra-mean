@@ -4,7 +4,10 @@
  */
 var init = require('./config/init')(),
 	config = require('./config/config'),
-	mongoose = require('mongoose');
+	mongoose = require('mongoose'),
+    http = require('http'),
+    https = require('https'),
+    fs = require('fs');
 
 /**
  * Main application entry file.
@@ -12,12 +15,7 @@ var init = require('./config/init')(),
  */
 
 // Bootstrap db connection
-var db = mongoose.connect(config.db, function(err) {
-	if (err) {
-		console.error('\x1b[31m', 'Could not connect to MongoDB!');
-		console.log(err);
-	}
-});
+var db = mongoose.connect(config.db);
 
 // Init the express application
 var app = require('./config/express')(db);
@@ -26,10 +24,26 @@ var app = require('./config/express')(db);
 require('./config/passport')();
 
 // Start the app by listening on <port>
-app.listen(config.port);
+//app.listen(config.port);
+
+// This line is from the Node.js HTTPS documentation.
+var options = {
+    key: fs.readFileSync('config/certs/server.key'),
+    cert: fs.readFileSync('config/certs/server.crt')
+};
+
+var secureServer = https.createServer(options, app);
+var regularServer = http.createServer(app);
+
+// Listen on httpsPort
+secureServer.listen(config.httpsPort);
+
+// Listen on regular port
+regularServer.listen(config.port);
 
 // Expose app
 exports = module.exports = app;
 
 // Logging initialization
 console.log('MEAN.JS application started on port ' + config.port);
+console.log('Listening securely on port ' + config.httpsPort);
