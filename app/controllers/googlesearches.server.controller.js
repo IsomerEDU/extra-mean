@@ -5,7 +5,9 @@
  */
 var mongoose = require('mongoose'),
 	Googlesearch = mongoose.model('Googlesearch'),
-	_ = require('lodash');
+	_ = require('lodash'),
+    googleapis = require('googleapis'),
+    config = require('../../config/config.js');
 
 /**
  * Get the error message from error object
@@ -95,16 +97,32 @@ exports.delete = function(req, res) {
 /**
  * List of Googlesearches
  */
-exports.list = function(req, res) { Googlesearch.find().sort('-created').populate('user', 'displayName').exec(function(err, googlesearches) {
-		if (err) {
-			return res.send(400, {
-				message: getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(googlesearches);
-		}
-	});
+exports.list = function(req, res) {
+    var customSearch = googleapis.customsearch('v1');
+
+    var options = {
+        //search engine id (cx)
+        cx: '010411035236550799691:feomfv-o2s4',
+        //query to send to google
+        q: 'insert query here',
+        //your api key (defined in development.js)
+        //you can put a string literal in here with the api key
+        //but it's better to put it in another file
+        key: config.google.searchApiKey
+    };
+
+    //this call uses the google custom search api
+    customSearch.cse.list(options, function(err, resp) {
+        if (err) {
+            console.log('An error occured', err);
+            return;
+        }
+        else{
+            res.jsonp(resp.items);
+        }
+    });
 };
+
 
 /**
  * Googlesearch middleware

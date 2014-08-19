@@ -16,6 +16,8 @@ module.exports = {
 		callbackURL: 'http://localhost:3000/auth/twitter/callback'
 	},
 	google: {
+        //your api key goes here
+        searchApiKey: '',
 		clientID: process.env.GOOGLE_ID || 'APP_ID',
 		clientSecret: process.env.GOOGLE_SECRET || 'APP_SECRET',
 		callbackURL: 'http://localhost:3000/auth/google/callback'
